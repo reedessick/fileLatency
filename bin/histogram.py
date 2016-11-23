@@ -30,7 +30,7 @@ def plot( dts ):
     fig = plt.figure()
     ax  = fig.gca()
 
-    ax.hist( dts, bins=max(len(dts)**0.5, 50) )
+    ax.hist( dts, bins=max(len(dts)**0.5, 10) )
 
     ax.set_xlabel('latency (sec)')
     ax.set_ylabel('count')
