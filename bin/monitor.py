@@ -63,6 +63,8 @@ while True:
         ### report latency
         print >> sys.stderr, '%.1f\t%s'%(gpsObs-gpsNom, filename) 
 
+    sys.stderr.flush()
+
     if opts.verbose:
         print >> sys.stdout, "mostRecent : %s at %.3f"%(mostRecent, gpsObs)
 
