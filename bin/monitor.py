@@ -1,6 +1,6 @@
 #!/usr/bin/python
 usage       = "monitor.py [--options] directory"
-description = "a rather brute force way of monitoring the latency of files. This seems to be necessary because the filesystem's timestamps are lying to me"
+description = "a rather brute force way of monitoring the latency of files; should produce ~second level accuracy as long as --cadence<1.0. This seems to be necessary because the filesystem's timestamps are lying to me"
 author      = "reed.essick@ligo.org"
 
 #-------------------------------------------------
@@ -33,7 +33,7 @@ parser = OptionParser(usage=usage, description=description)
 parser.add_option('-v', '--verbose', default=False, action='store_true')
 
 parser.add_option('-c', '--cadence', default=0.1, type='float',
-    help='how often we query the filesystem. Sets the lower limit on how accurate your timing resolution can be' )
+    help='how often we query the filesystem' )
 
 opts, args = parser.parse_args()
 
