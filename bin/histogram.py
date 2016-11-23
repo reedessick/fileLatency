@@ -26,11 +26,15 @@ def extract( file_obj ):
         line = file_obj.readline()
     return dts
 
-def plot( dts ):
+def plot( dts, cumulative=False ):
     fig = plt.figure()
     ax  = fig.gca()
 
-    ax.hist( dts, bins=max(int(len(dts)**0.5), 10) )
+    if cumulative:
+        ax.hist( dts, bins=max(int(len(dts)**0.5), 10), cumulative=True, weights=np.ones(len(dts), dtype=float)/len(dts) )
+        ax.set_ylim(ymin=0, ymax=1)
+    else:
+        ax.hist( dts, bins=max(int(len(dts)**0.5), 10) )
 
     ax.set_xlabel('latency (sec)')
     ax.set_ylabel('count')
@@ -48,6 +52,8 @@ parser.add_option('-c', '--cadence', default=0.1, type='float',
 If --one-off is supplied, this is ignored.' )
 
 parser.add_option('', '--one-off', default=False, action='store_true' )
+
+parser.add_option('', '--cumulative', default=False, action='store_true' )
 
 parser.add_option('-o', '--output-dir', default='.', type='string')
 parser.add_option('-t', '--tag', default='', type='string')
@@ -73,7 +79,7 @@ dts += extract( file_obj )
 
 if dts:
     ### plot
-    fig, ax = plot( dts )
+    fig, ax = plot( dts , cumulative=opts.cumulative )
 
     ### save
     figname = "%s/monitor%s.png"%(opts.output_dir, opts.tag)
@@ -102,7 +108,7 @@ if not opts.one_off:
                 print('%s updated -> %d new lines'%(moniterr, len(new)))
 
             ### plot
-            fig, ax = plot( dts )
+            fig, ax = plot( dts, cumulative=opts.cumulative )
 
             ### save
             if opts.verbose:
