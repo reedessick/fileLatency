@@ -16,10 +16,14 @@ from optparse import OptionParser
 
 #-------------------------------------------------
 
-def getFiles( directory, mostRecent='' ):
+def getFiles( directory, mostRecent='', suffix='gwf', verbose=False ):
 
     ### glob filenames that are bigger than mostRecent
-    filenames = sorted([filename for filename in glob.glob('%s/*gwf'%directory) if filename > mostRecent])
+    globstring = '%s/*%s'%(directory, suffix)
+    if verbose:
+        print "glob : "+globstring
+
+    filenames = sorted([filename for filename in glob.glob(globstring) if filename > mostRecent])
 
     if filenames: ### if there are any, update mostRecent
         mostRecent = filenames[-1]
@@ -31,9 +35,13 @@ def getFiles( directory, mostRecent='' ):
 parser = OptionParser(usage=usage, description=description)
 
 parser.add_option('-v', '--verbose', default=False, action='store_true')
+parser.add_option('-V', '--Verbose', default=False, action='store_true')
 
 parser.add_option('-c', '--cadence', default=0.1, type='float',
     help='how often we query the filesystem' )
+
+parser.add_option('-s', '--suffix', default='gwf', type='string',
+    help='the suffix for the filename. DEFAULT="gwf"' )
 
 opts, args = parser.parse_args()
 
@@ -41,10 +49,12 @@ if len(args)!=1:
     raise ValueError('please supply exactly 1 input argument\n%s'%usage)
 directory = args[0]
 
+opts.verbose = opts.verbose or opts.Verbose
+
 #-------------------------------------------------
 
 ### deterimine initial state of directory
-_, mostRecent = getFiles( directory )
+_, mostRecent = getFiles( directory, suffix=opts.suffix, verbose=opts.Verbose )
 if opts.verbose:
     print >> sys.stdout, 'mostRecent : %s'%mostRecent
 
@@ -53,7 +63,7 @@ while True:
     t0 = time.time() ### remember when we started
 
     ### discover new files
-    filenames, mostRecent = getFiles( directory, mostRecent=mostRecent ) 
+    filenames, mostRecent = getFiles( directory, mostRecent=mostRecent, suffix=opts.suffix, verbose=opts.Verbose) 
 
     ### print new files and their latencies
     gpsObs = tconvert('now') ### get the current gps time
